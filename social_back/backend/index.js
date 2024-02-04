@@ -7,6 +7,9 @@ const morgan = require("morgan");
 const routerUser =  require("./routes/users");
 const routerAuth =  require("./routes/auth");
 const routerPost =  require("./routes/posts");
+const cors = require("cors");
+const bodyParser = require('body-parser');
+
 
 dotenv.config();
 // mongoose.connect(process.env.MONGO_URL).then(()=>console.log("connected to db")).catch(
@@ -24,6 +27,8 @@ app.use(morgan("common"));
 app.use("/api/users",routerUser);
 app.use("/api/auth",routerAuth);
 app.use("/api/posts",routerPost);
+app.use(cors());
+app.use(bodyParser.json());
 
 
 
