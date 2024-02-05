@@ -1,35 +1,65 @@
-import React from "react";
-import './profile.css';
-import Topbar from '../../components/topbar/Topbar';
-import SideBar from '../../components/sidebar/Sidebar';
-import Feed from '../../components/feed/Feed';
-import RightBar from '../../components/rightbar/Rightbar';
+import "./profile.css";
+import Topbar from "../../components/topbar/Topbar";
+import Sidebar from "../../components/sidebar/Sidebar";
+import Feed from "../../components/feed/Feed";
+import Rightbar from "../../components/rightbar/Rightbar";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useParams } from "react-router";
 
+export default function Profile() {
+  const PF = process.env.REACT_APP_PUBLIC_FOLDER;
+  const [user, setUser] = useState({});
+  const username = useParams().username;
 
-export default function Profile(){
-    const PF = process.env.REACT_APP_PUBLIC_FOLDER;
-    return(
-        <>
-            <Topbar/>
-            <div className="profile">
-                <SideBar/>
-                <div className="profileRight">
-                    <div className="profileRightTop">
-                        <div className="profileCover">
-                            <img src={`${PF}post/3.jpeg`} alt="" className="profileCoverImg" />
-                            <img src={`${PF}person/7.jpeg`} alt="" className="profileUserImg" />
-                        </div>
-                        <div className="profileInfo">
-                            <h4 className="profileInfoName">el interne</h4>
-                            <span className="profileInfoDesc">Hetha houwa el thake2 el istine3i!!</span>
-                        </div>
-                    </div>
-                    <div className="profileRightBottom">
-                        <Feed/>
-                        <RightBar profile/>
-                    </div>
-                </div>
+  useEffect(() => {
+    const fetchUser = async () => {
+      const res = await axios.get(`/users?username=${username}`);
+      setUser(res.data);
+      console.log(res)
+    };
+    fetchUser();
+    console.log(username);
+  }, [username]);
+
+  return (
+    <>
+      <Topbar />
+      <div className="profile">
+        <Sidebar />
+        <div className="profileRight">
+          <div className="profileRightTop">
+            <div className="profileCover">
+              <img
+                className="profileCoverImg"
+                src={
+                  user.coverPicture
+                    ? PF + user.coverPicture
+                    : PF + "person/noCover.png"
+                }
+                alt=""
+              />
+              <img
+                className="profileUserImg"
+                src={
+                  user.profilePicture
+                    ? PF + user.profilePicture
+                    : PF + "person/noAvatar.png"
+                }
+                alt=""
+              />
             </div>
-        </>
-    )
+            <div className="profileInfo">
+              <h4 className="profileInfoName">{user.username}</h4>
+              <span className="profileInfoDesc">{user.desc}</span>
+            </div>
+          </div>
+          <div className="profileRightBottom">
+            <Feed username={username} />
+            <Rightbar user={user} />
+          </div>
+        </div>
+      </div>
+    </>
+  );
 }
