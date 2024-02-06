@@ -2,12 +2,14 @@ import "./feed.css";
 import Share from "../share/Share";
 import Post from "../post/Post";
 import { Posts } from "../../dummyData";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { AuthContext } from "../../context/AuthContext";
 
 
 export default function Feed({username}) {
   const [posts,setPosts] = useState([]);
+  const {user} = useContext(AuthContext);
 
   
   useEffect(() => {
@@ -15,17 +17,16 @@ export default function Feed({username}) {
       try {
         const res = username
           ? await axios.get("/posts/profile/" + username)
-          : await axios.get("posts/timeline/65b26b2c6b328b19bf84199e");
+          : await axios.get("posts/timeline/" + user._id);    
         setPosts(res.data);
       } catch (error) {
         console.error("Error fetching posts:", error);
-        // Handle the error here, for example:
-        // setError(error.message);
+        console.log(user._id)
       }
     };
   
     fetchPosts();
-  }, []);
+  }, [username,user._id]);
 
 
   return (

@@ -72,7 +72,7 @@ router.get("/:id", async (req,res)=>{
     }
 })
 
-//get timeline posts
+// //get timeline posts
 router.get("/timeline/:userId", async (req,res) =>{   //it take the timeline as id so it makes a conflict with the previous method so we add /all
     try{
         const currentUser = await User.findById(req.params.userId);
@@ -87,6 +87,8 @@ router.get("/timeline/:userId", async (req,res) =>{   //it take the timeline as 
         res.status(500).json(err);
     }
 })
+
+
 
 
 // User1
