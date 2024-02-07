@@ -18,7 +18,11 @@ export default function Feed({username}) {
         const res = username
           ? await axios.get("/posts/profile/" + username)
           : await axios.get("posts/timeline/" + user._id);    
-        setPosts(res.data);
+        setPosts(
+          res.data.sort((p1,p2) =>  {
+              return new Date(p2.createdAt) - new Date(p1.createdAt)
+          })
+          );
       } catch (error) {
         console.error("Error fetching posts:", error);
         console.log(user._id)
@@ -32,7 +36,7 @@ export default function Feed({username}) {
   return (
     <div className="feed">
       <div className="feedWrapper">
-        <Share/>
+        {username === user.username && <Share/>}
         {posts.map((p) =>(
           <Post key={p._id} post={p} />
         ))}
