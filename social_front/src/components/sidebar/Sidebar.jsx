@@ -4,7 +4,7 @@ import { Users } from "../../dummyData";
 import CloseFriend from "../closeFriend/CloseFriend";
 
 
-export default function Sidetbar() {
+export default function Sidebar() {
   return (
     <div className="sidebar">
       <div className="sidebarWrapper">
