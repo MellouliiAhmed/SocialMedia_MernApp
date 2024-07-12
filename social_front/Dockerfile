@@ -1,5 +1,9 @@
 FROM node:latest
 # Set the working directory within the container
+
+# Clear npm cache
+RUN npm cache clean --force
+
 WORKDIR /app
 # Copy the package.json and package-lock.json files for the backend (assuming they are in the root directory)
 COPY package*.json ./
