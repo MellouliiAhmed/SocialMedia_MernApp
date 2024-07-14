@@ -1,0 +1,95 @@
+pipeline {
+    agent any
+    tools {
+        nodejs "NODEJS_HOME"  // Assurez-vous que Node.js est configuré dans Jenkins
+    }
+    environment {
+        // Définir les variables d'environnement nécessaires
+        CACHE_DIR = "${env.WORKSPACE}/.npm"
+        def imageTag="1.0"
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout du code source
+                git branch: 'master', 
+                    credentialsId: 'git-credentials',   
+                    url: 'https://github.com/MellouliiAhmed/SocialMedia_MernApp.git'
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    // Naviguer dans le répertoire frontend
+                    dir('social_back/backend/') {
+                        // Créer le répertoire de cache si inexistant
+                        sh 'mkdir -p $CACHE_DIR'
+                        // Configurer npm pour utiliser le répertoire de cache
+                        sh 'npm config set cache $CACHE_DIR --global'
+                        // Installation des dépendances avec gestion du cache
+                        sh 'npm ci --force'
+                    }
+                }
+            }
+        }
+        stage('Test Backend') {
+            steps {
+                script {
+                    // Naviguer dans le répertoire frontend et construire le projet
+                    dir('social_back/backend/') {
+                        // sh 'npm run Test'
+                        sh 'echo "test the code"'
+                    }
+                }
+            }
+        }
+        
+        stage('Build Backend Image') {
+            steps {
+                script {
+                    // Naviguer dans le répertoire frontend et construire le projet
+                    dir('social_back/backend/') {
+                        // sh 'npm run Test'
+                        // def imageTag="1.0"
+                        sh "docker image build -t mellouliiahmed/cloverfield-backend:${imageTag} ."
+                        sh "docker images"
+                    }
+                }
+            }
+        }
+        
+        stage('Push Backend image to DockerHub') {
+            steps {
+                script {
+                    dir('social_back/backend/') {
+                        withCredentials([string(credentialsId: 'dockerhub-PWD', variable: 'DOCKERHUBPWD')]) {
+                            sh 'docker login -u mellouliiahmed -p ${DOCKERHUBPWD} docker.io'
+                            sh 'docker image push mellouliiahmed/cloverfield-backend:${imageTag}'
+                            sh 'docker rmi -f mellouliiahmed/cloverfield-backend:${imageTag}'
+                        }
+                    }
+                }
+            }
+        }
+        
+    }
+    post {
+        always {
+            // Actions à effectuer après toutes les étapes, succès ou échec
+            script {
+                dir('social_back/backend/') {
+                    // Exemple : nettoyer les fichiers temporaires ou d'autres actions post-build
+                    sh 'rm -rf node_modules'
+                }
+            }
+        }
+        success {
+            // Actions à effectuer uniquement en cas de succès
+            echo 'Build réussi!'
+        }
+        failure {
+            // Actions à effectuer uniquement en cas d'échec
+            echo 'Build échoué.'
+        }
+    }
+}
