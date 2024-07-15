@@ -6,7 +6,7 @@ pipeline {
     environment {
         // Définir les variables d'environnement nécessaires
         CACHE_DIR = "${env.WORKSPACE}/.npm"
-        def imageTag="1.0"
+        imageTag = "1.0"
     }
     stages {
         stage('Checkout') {
@@ -15,6 +15,13 @@ pipeline {
                 git branch: 'master', 
                     credentialsId: 'git-credentials',   
                     url: 'https://github.com/MellouliiAhmed/SocialMedia_MernApp.git'
+                script {
+                    def changes = sh(script: "git diff --name-only HEAD~1 HEAD", returnStdout: true).trim()
+                    if (!changes.contains('social_back/backend/')) {
+                        currentBuild.result = 'ABORTED'
+                        error('No changes in the backend directory.')
+                    }
+                }
             }
         }
         stage('Install Dependencies') {
