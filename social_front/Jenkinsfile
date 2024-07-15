@@ -15,6 +15,14 @@ pipeline {
                 git branch: 'master', 
                     credentialsId: 'git-credentials',   
                     url: 'https://github.com/MellouliiAhmed/SocialMedia_MernApp.git'
+                script {
+                    def changes = sh(script: "git diff --name-only HEAD~1 HEAD", returnStdout: true).trim()
+                    echo "Changed files: ${changes}"
+                    if (!changes.contains('social_front/')) {
+                        currentBuild.result = 'ABORTED'
+                        error('No changes in the frontend directory.')
+                    }
+                }
             }
         }
         stage('Install Dependencies') {
