@@ -18,6 +18,7 @@ pipeline {
                     url: 'https://github.com/MellouliiAhmed/SocialMedia_MernApp.git'
                 script {
                     def changes = sh(script: "git diff --name-only HEAD~1 HEAD", returnStdout: true).trim()
+                    sh 'echo $changes'
                     if (!changes.contains('social_back/backend/')) {
                         currentBuild.result = 'ABORTED'
                         error('No changes in the backend directory.')
