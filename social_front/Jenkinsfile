@@ -56,8 +56,7 @@ pipeline {
         stage('Build Frontend Image') {
             steps {
                 script {
-                    // env.IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                    IMAGE_TAG = "2.0"
+                    IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
                     echo "${IMAGE_TAG}"
                     // Naviguer dans le répertoire frontend et construire le projet
                     dir('social_front/') {
