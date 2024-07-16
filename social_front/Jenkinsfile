@@ -72,9 +72,9 @@ pipeline {
         stage('Push Frontend image to DockerHub') {
             steps {
                 script {
+                    IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
                     dir('social_front/') {
                         withCredentials([string(credentialsId: 'dockerhub-PWD', variable: 'DOCKERHUBPWD')]) {
-                            IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
                             sh 'docker login -u mellouliiahmed -p ${DOCKERHUBPWD} docker.io'
                             sh 'docker image push mellouliiahmed/cloverfield-frontend:${IMAGE_TAG}'
                         }
@@ -136,8 +136,8 @@ pipeline {
         always {
             // Actions à effectuer après toutes les étapes, succès ou échec
             script {
+                IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
                 dir('social_front/') {
-                    IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
                     sh 'docker rmi -f mellouliiahmed/cloverfield-frontend:${IMAGE_TAG}'
                     // Exemple : nettoyer les fichiers temporaires ou d'autres actions post-build
                     sh 'rm -rf node_modules'
