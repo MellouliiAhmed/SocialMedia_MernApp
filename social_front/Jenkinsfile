@@ -74,10 +74,25 @@ pipeline {
                 script {
                     dir('social_front/') {
                         withCredentials([string(credentialsId: 'dockerhub-PWD', variable: 'DOCKERHUBPWD')]) {
+                            IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
                             sh 'docker login -u mellouliiahmed -p ${DOCKERHUBPWD} docker.io'
                             sh 'docker image push mellouliiahmed/cloverfield-frontend:${IMAGE_TAG}'
                         }
                     }
+                }
+            }
+        }
+        stage('Push Frontend image to staging Approval') {
+            steps {
+                script {   
+                    input message: 'Do you want to deploy to production?', ok: 'Deploy'
+                }
+            }
+        }
+        stage('Push Frontend image to staging ') {
+            steps {
+                script {   
+                    echo "Deploying to staging"
                 }
             }
         }
@@ -88,7 +103,8 @@ pipeline {
             // Actions à effectuer après toutes les étapes, succès ou échec
             script {
                 dir('social_front/') {
-                    sh 'docker rmi -f mellouliiahmed/cloverfield-backend:${IMAGE_TAG}'
+                    IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    sh 'docker rmi -f mellouliiahmed/cloverfield-frontend:${IMAGE_TAG}'
                     // Exemple : nettoyer les fichiers temporaires ou d'autres actions post-build
                     sh 'rm -rf node_modules'
                 }
