@@ -72,10 +72,11 @@ pipeline {
         stage('Push Frontend image to DockerHub') {
             steps {
                 script {
-                    IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                    echo "${IMAGE_TAG}"
+                    
                     dir('social_front/') {
                         withCredentials([string(credentialsId: 'dockerhub-PWD', variable: 'DOCKERHUBPWD')]) {
+                            IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                            echo "${IMAGE_TAG}"
                             sh 'docker login -u mellouliiahmed -p ${DOCKERHUBPWD} docker.io'
                             sh 'docker image push mellouliiahmed/cloverfield-frontend:${IMAGE_TAG}'
                         }
