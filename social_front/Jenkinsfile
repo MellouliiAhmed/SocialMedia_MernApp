@@ -73,6 +73,7 @@ pipeline {
             steps {
                 script {
                     IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    echo "${IMAGE_TAG}"
                     dir('social_front/') {
                         withCredentials([string(credentialsId: 'dockerhub-PWD', variable: 'DOCKERHUBPWD')]) {
                             sh 'docker login -u mellouliiahmed -p ${DOCKERHUBPWD} docker.io'
