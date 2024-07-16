@@ -6,7 +6,7 @@ pipeline {
     environment {
         // Définir les variables d'environnement nécessaires
         CACHE_DIR = "${env.WORKSPACE}/.npm"
-        imageTag = "1.0"
+        IMAGE_TAG = "1.0"
     }
     stages {
         stage('Checkout') {
@@ -59,8 +59,10 @@ pipeline {
                     // Naviguer dans le répertoire frontend et construire le projet
                     dir('social_front/') {
                         // sh 'npm run Test'
+                        env.IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                        echo "env.IMAGE_TAG"
                         // def imageTag="1.0"
-                        sh "docker image build -t mellouliiahmed/cloverfield-frontend:${imageTag} ."
+                        sh "docker image build -t mellouliiahmed/cloverfield-frontend:${IMAGE_TAG} ."
                         sh "docker images"
                     }
                 }
@@ -73,8 +75,7 @@ pipeline {
                     dir('social_front/') {
                         withCredentials([string(credentialsId: 'dockerhub-PWD', variable: 'DOCKERHUBPWD')]) {
                             sh 'docker login -u mellouliiahmed -p ${DOCKERHUBPWD} docker.io'
-                            sh 'docker image push mellouliiahmed/cloverfield-frontend:${imageTag}'
-                             sh 'docker rmi -f mellouliiahmed/cloverfield-backend:${imageTag}'
+                            sh 'docker image push mellouliiahmed/cloverfield-frontend:${IMAGE_TAG}'
                         }
                     }
                 }
@@ -87,6 +88,7 @@ pipeline {
             // Actions à effectuer après toutes les étapes, succès ou échec
             script {
                 dir('social_front/') {
+                    sh 'docker rmi -f mellouliiahmed/cloverfield-backend:${IMAGE_TAG}'
                     // Exemple : nettoyer les fichiers temporaires ou d'autres actions post-build
                     sh 'rm -rf node_modules'
                 }
