@@ -56,11 +56,11 @@ pipeline {
         stage('Build Frontend Image') {
             steps {
                 script {
+                    env.IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    echo "${env.IMAGE_TAG}"
                     // Naviguer dans le répertoire frontend et construire le projet
                     dir('social_front/') {
-                        // sh 'npm run Test'
-                        env.IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                        echo "env.IMAGE_TAG"
+                        // sh 'npm run Test
                         // def imageTag="1.0"
                         sh "docker image build -t mellouliiahmed/cloverfield-frontend:${IMAGE_TAG} ."
                         sh "docker images"
