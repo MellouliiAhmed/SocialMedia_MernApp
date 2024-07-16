@@ -85,7 +85,7 @@ pipeline {
         stage('Push Frontend image to staging Approval') {
             steps {
                 script {   
-                    input message: 'Do you want to deploy to production?', ok: 'Deploy'
+                    input message: 'Do you want to deploy to staging?', ok: 'Deploy'
                 }
             }
         }
@@ -94,6 +94,40 @@ pipeline {
                 script {   
                     echo "Deploying to staging"
                 }
+            }
+        }
+        stage('Manual Approval with Parameters') {
+            steps {
+                script {
+                    def userInput = input(
+                        id: 'userInput', 
+                        message: 'Provide details for deployment:', 
+                        parameters: [
+                            string(defaultValue: '', description: 'Enter your name', name: 'USERNAME'),
+                            booleanParam(defaultValue: true, description: 'Deploy to production?', name: 'DEPLOY')
+                        ]
+                    )
+                    echo "User ${userInput.USERNAME} selected to deploy: ${userInput.DEPLOY}"
+                }
+            }
+        }
+        stage('Deploy') {
+            when {
+                expression {
+                    return params.DEPLOY
+                }
+            }
+            steps {
+                echo 'Deploying...'
+                // Add your deployment steps here
+            }
+        }
+        stage('Push Frontend image to production Approval') {
+            steps {
+                script {   
+                    input message: 'Do you want to deploy to production?', ok: 'Deploy'
+                }
+                echo "Deploying to production"
             }
         }
         
