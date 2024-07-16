@@ -6,7 +6,7 @@ pipeline {
     environment {
         // Définir les variables d'environnement nécessaires
         CACHE_DIR = "${env.WORKSPACE}/.npm"
-        imageTag = "1.0"
+        IMAGE_TAG = "1.0"
     }
     stages {
         stage('Checkout') {
@@ -55,11 +55,13 @@ pipeline {
         stage('Build Backend Image') {
             steps {
                 script {
+                    IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    echo "${IMAGE_TAG}"
                     // Naviguer dans le répertoire frontend et construire le projet
                     dir('social_back/backend/') {
                         // sh 'npm run Test'
                         // def imageTag="1.0"
-                        sh "docker image build -t mellouliiahmed/cloverfield-backend:${imageTag} ."
+                        sh "docker image build -t mellouliiahmed/cloverfield-backend:${IMAGE_TAG} ."
                         sh "docker images"
                     }
                 }
@@ -71,12 +73,47 @@ pipeline {
                 script {
                     dir('social_back/backend/') {
                         withCredentials([string(credentialsId: 'dockerhub-PWD', variable: 'DOCKERHUBPWD')]) {
+                            IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                            echo "${IMAGE_TAG}"
                             sh 'docker login -u mellouliiahmed -p ${DOCKERHUBPWD} docker.io'
-                            sh 'docker image push mellouliiahmed/cloverfield-backend:${imageTag}'
-                            sh 'docker rmi -f mellouliiahmed/cloverfield-backend:${imageTag}'
+                            sh "docker image push mellouliiahmed/cloverfield-backend:${IMAGE_TAG}"
                         }
                     }
                 }
+            }
+        }
+        stage('Push Frontend image to staging ') {
+            steps {
+                script {
+                    try {
+                        timeout(time: 1, unit: 'HOURS') {
+                            input message: 'Do you want to deploy to staging?', ok: 'Deploy'
+                        }
+                    } catch (Exception e) {
+                        echo 'Deployment was not approved or timed out.'
+                        currentBuild.result = 'ABORTED'
+                        error 'Stopping the pipeline as manual approval was not provided.'
+                    }
+                }
+                echo "Deploying to Staging"
+            }
+        }
+
+       
+        stage('Push Frontend image to production ') {
+            steps {
+                script {
+                    try {
+                        timeout(time: 1, unit: 'HOURS') {
+                            input message: 'Do you want to deploy to production?', ok: 'Deploy'
+                        }
+                    } catch (Exception e) {
+                        echo 'Deployment was not approved or timed out.'
+                        currentBuild.result = 'ABORTED'
+                        error 'Stopping the pipeline as manual approval was not provided.'
+                    }
+                }
+                echo "Deploying to production"
             }
         }
         
@@ -85,7 +122,9 @@ pipeline {
         always {
             // Actions à effectuer après toutes les étapes, succès ou échec
             script {
+                IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
                 dir('social_back/backend/') {
+                    sh "docker rmi -f mellouliiahmed/cloverfield-backend:${IMAGE_TAG}"
                     // Exemple : nettoyer les fichiers temporaires ou d'autres actions post-build
                     sh 'rm -rf node_modules'
                 }
