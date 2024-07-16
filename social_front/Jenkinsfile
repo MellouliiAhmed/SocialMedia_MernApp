@@ -107,7 +107,7 @@ pipeline {
                 script {
                     try {
                         timeout(time: 1, unit: 'HOURS') {
-                            input message: 'Do you want to deploy to staging?', ok: 'Deploy'
+                            input message: 'Do you want to deploy to production?', ok: 'Deploy'
                         }
                     } catch (Exception e) {
                         echo 'Deployment was not approved or timed out.'
