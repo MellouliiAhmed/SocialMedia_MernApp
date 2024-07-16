@@ -84,50 +84,36 @@ pipeline {
                 }
             }
         }
-        stage('Push Frontend image to staging Approval') {
-            steps {
-                script {   
-                    input message: 'Do you want to deploy to staging?', ok: 'Deploy'
-                }
-            }
-        }
         stage('Push Frontend image to staging ') {
             steps {
-                script {   
-                    echo "Deploying to staging"
+                script {
+                    try {
+                        timeout(time: 1, unit: 'HOURS') {
+                            input message: 'Do you want to deploy to staging?', ok: 'Deploy'
+                        }
+                    } catch (Exception e) {
+                        echo 'Deployment was not approved or timed out.'
+                        currentBuild.result = 'ABORTED'
+                        error 'Stopping the pipeline as manual approval was not provided.'
+                    }
                 }
+                echo "Deploying to Staging"
             }
         }
-        stage('Manual Approval with Parameters') {
+
+       
+        stage('Push Frontend image to production ') {
             steps {
                 script {
-                    def userInput = input(
-                        id: 'userInput', 
-                        message: 'Provide details for deployment:', 
-                        parameters: [
-                            string(defaultValue: '', description: 'Enter your name', name: 'USERNAME'),
-                            booleanParam(defaultValue: true, description: 'Deploy to production?', name: 'DEPLOY')
-                        ]
-                    )
-                    echo "User ${userInput.USERNAME} selected to deploy: ${userInput.DEPLOY}"
-                }
-            }
-        }
-        stage('Deploy') {
-            when {
-                expression {
-                    return params.DEPLOY
-                }
-            }
-            steps {
-                echo 'Deploying...'
-                // Add your deployment steps here
-            }
-        }
-        stage('Push Frontend image to production Approval') {
-            steps {
-                script {   
-                    input message: 'Do you want to deploy to production?', ok: 'Deploy'
+                    try {
+                        timeout(time: 1, unit: 'HOURS') {
+                            input message: 'Do you want to deploy to staging?', ok: 'Deploy'
+                        }
+                    } catch (Exception e) {
+                        echo 'Deployment was not approved or timed out.'
+                        currentBuild.result = 'ABORTED'
+                        error 'Stopping the pipeline as manual approval was not provided.'
+                    }
                 }
                 echo "Deploying to production"
             }
