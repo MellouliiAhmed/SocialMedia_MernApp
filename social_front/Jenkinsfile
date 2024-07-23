@@ -36,6 +36,7 @@ pipeline {
                         // Configurer npm pour utiliser le répertoire de cache
                         sh 'npm config set cache $CACHE_DIR --global'
                         // Installation des dépendances avec gestion du cache
+                        
                         sh 'npm ci --force'
                     }
                 }
