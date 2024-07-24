@@ -94,7 +94,7 @@ pipeline {
                         timeout(time: 1, unit: 'HOURS') {
                             input message: 'Do you want to deploy to staging?', ok: 'Deploy'
                             def IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                            def env = 'stg'
+                            def env = 'prd'
                             def project = 'cloverfield-frontend'
                             def app = 'mellouliiahmed/cloverfield-frontend'
                             def version = '${IMAGE_TAG}'
