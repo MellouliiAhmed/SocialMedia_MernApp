@@ -83,7 +83,7 @@ pipeline {
                 }
             }
         }
-        stage('Push Frontend image to staging ') {
+        stage('Push Backend image to staging ') {
             steps {
                 script {
                     try {
@@ -94,7 +94,7 @@ pipeline {
                             def app = 'mellouliiahmed/cloverfield-backend'
                             def version = IMAGE_TAG
                             build job: 'pushops-pipeline', parameters: [
-                                string(name: 'env', value: env),
+                                string(name: 'environment', value: env),
                                 string(name: 'project', value: project),
                                 string(name: 'app', value: app),
                                 string(name: 'version', value: version)
@@ -111,7 +111,7 @@ pipeline {
         }
 
        
-        stage('Push Frontend image to production ') {
+        stage('Push Backend image to production ') {
             steps {
                 script {
                     try {
@@ -122,7 +122,7 @@ pipeline {
                             def app = 'mellouliiahmed/cloverfield-backend'
                             def version = IMAGE_TAG
                             build job: 'pushops-pipeline', parameters: [
-                                string(name: 'env', value: env),
+                                string(name: 'environment', value: env),
                                 string(name: 'project', value: project),
                                 string(name: 'app', value: app),
                                 string(name: 'version', value: version)
