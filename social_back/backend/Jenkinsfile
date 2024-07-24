@@ -88,16 +88,15 @@ pipeline {
                     try {
                         timeout(time: 1, unit: 'HOURS') {
                             input message: 'Do you want to deploy to staging?', ok: 'Deploy'
-                            def IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                            def environment = 'stg'
-                            def project = 'cloverfield-frontend'
-                            def app = 'mellouliiahmed/cloverfield-frontend'
-                            def version = '${IMAGE_TAG}'
+                            def env = 'stg'
+                            def project = 'cloverfield-backend'
+                            def app = 'mellouliiahmed/cloverfield-backend'
+                            def version = IMAGE_TAG
                             build job: 'pushops-pipeline', parameters: [
-                                string(name: 'environment', value: '${environment}'),
-                                string(name: 'project', value: '${project}'),
-                                string(name: 'app', value: '${app}'),
-                                string(name: 'version', value: '${version}')     
+                                string(name: 'env', value: env),
+                                string(name: 'project', value: project),
+                                string(name: 'app', value: app),
+                                string(name: 'version', value: version)
                             ]
                         }
                     } catch (Exception e) {
@@ -117,6 +116,16 @@ pipeline {
                     try {
                         timeout(time: 1, unit: 'HOURS') {
                             input message: 'Do you want to deploy to production?', ok: 'Deploy'
+                            def env = 'prd'
+                            def project = 'cloverfield-backend'
+                            def app = 'mellouliiahmed/cloverfield-backend'
+                            def version = IMAGE_TAG
+                            build job: 'pushops-pipeline', parameters: [
+                                string(name: 'env', value: env),
+                                string(name: 'project', value: project),
+                                string(name: 'app', value: app),
+                                string(name: 'version', value: version)
+                            ]
                         }
                     } catch (Exception e) {
                         echo 'Deployment was not approved or timed out.'
