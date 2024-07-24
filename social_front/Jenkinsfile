@@ -121,6 +121,16 @@ pipeline {
                     try {
                         timeout(time: 1, unit: 'HOURS') {
                             input message: 'Do you want to deploy to production?', ok: 'Deploy'
+                            def env = 'prd'
+                            def project = 'cloverfield-frontend'
+                            def app = 'mellouliiahmed/cloverfield-frontend'
+                            def version = IMAGE_TAG
+                            build job: 'pushops-pipeline', parameters: [
+                                string(name: 'env', value: env),
+                                string(name: 'project', value: project),
+                                string(name: 'app', value: app),
+                                string(name: 'version', value: version)
+                            ]
                         }
                     } catch (Exception e) {
                         echo 'Deployment was not approved or timed out.'
