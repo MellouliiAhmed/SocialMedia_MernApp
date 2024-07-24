@@ -98,7 +98,7 @@ pipeline {
                             def app = 'mellouliiahmed/cloverfield-frontend'
                             def version = IMAGE_TAG
                             build job: 'pushops-pipeline', parameters: [
-                                string(name: 'env', value: env),
+                                string(name: 'environment', value: env),
                                 string(name: 'project', value: project),
                                 string(name: 'app', value: app),
                                 string(name: 'version', value: version)
@@ -126,7 +126,7 @@ pipeline {
                             def app = 'mellouliiahmed/cloverfield-frontend'
                             def version = IMAGE_TAG
                             build job: 'pushops-pipeline', parameters: [
-                                string(name: 'env', value: env),
+                                string(name: 'environment', value: env),
                                 string(name: 'project', value: project),
                                 string(name: 'app', value: app),
                                 string(name: 'version', value: version)
