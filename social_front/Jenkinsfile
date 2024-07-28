@@ -20,9 +20,9 @@ pipeline {
                 //     url: 'https://github.com/MellouliiAhmed/SocialMedia_MernApp.git'
                 script {
                     sh "set -o xtrace"
-                    echo "Checking out branch: ${GIT_BRANCH#*/}"
+                    echo "Checking out branch: ${env.GIT_BRANCH}"
                     checkout([$class: 'GitSCM', 
-                              branches: [[name: "*/${GIT_BRANCH#*/}"]],
+                              branches: [[name: "${env.GIT_BRANCH}"]],
                               // credentialsId: 'git-credentials', 
                               // doGenerateSubmoduleConfigurations: false,
                               // extensions: [],
