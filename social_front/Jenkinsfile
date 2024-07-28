@@ -7,7 +7,7 @@ pipeline {
         // Définir les variables d'environnement nécessaires
         CACHE_DIR = "${env.WORKSPACE}/.npm"
         IMAGE_TAG = "1.0"
-        BRANCH_NAME = "${env.BRANCH_NAME}"
+        // BRANCH_NAME = "${env.BRANCH_NAME}"
     }
 
     
@@ -20,9 +20,9 @@ pipeline {
                 //     url: 'https://github.com/MellouliiAhmed/SocialMedia_MernApp.git'
                 script {
                     sh "set -o xtrace"
-                    echo "Checking out branch: ${BRANCH_NAME}"
+                    echo "Checking out branch: ${GIT_BRANCH}"
                     checkout([$class: 'GitSCM', 
-                              branches: [[name: "*/${BRANCH_NAME}"]],
+                              branches: [[name: "*/${GIT_BRANCH}"]],
                               // credentialsId: 'git-credentials', 
                               // doGenerateSubmoduleConfigurations: false,
                               // extensions: [],
