@@ -14,10 +14,16 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout du code source
-                git branch: 'master', 
-                    credentialsId: 'git-credentials',   
-                    url: 'https://github.com/MellouliiAhmed/SocialMedia_MernApp.git'
+                // git branch: 'master', 
+                //     credentialsId: 'git-credentials',   
+                //     url: 'https://github.com/MellouliiAhmed/SocialMedia_MernApp.git'
                 script {
+                    checkout([$class: 'GitSCM', 
+                              branches: [[name: '*/master']], 
+                              credentialsId: 'git-credentials', 
+                              userRemoteConfigs: [[url: 'https://github.com/MellouliiAhmed/SocialMedia_MernApp.git']]
+                             ])
+                    
                     def changes = sh(script: "git diff --name-only HEAD~1 HEAD", returnStdout: true).trim()
                     echo "Changed files: ${changes}"
                     if (!changes.contains('social_front/')) {
