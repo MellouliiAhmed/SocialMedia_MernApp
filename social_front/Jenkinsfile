@@ -20,9 +20,10 @@ pipeline {
                 //     url: 'https://github.com/MellouliiAhmed/SocialMedia_MernApp.git'
                 script {
                     sh "set -o xtrace"
-                    echo "Checking out branch: ${env.GIT_BRANCH#*/}"
+                    def branchName = env.GIT_BRANCH.replaceFirst('^origin/', '')
+                    echo "The branch that triggered this build is: ${branchName}"
                     checkout([$class: 'GitSCM', 
-                              branches: [[name: "${env.GIT_BRANCH#*/}"]],
+                              branches: [[name: "${branchName}"]],
                               // credentialsId: 'git-credentials', 
                               // doGenerateSubmoduleConfigurations: false,
                               // extensions: [],
