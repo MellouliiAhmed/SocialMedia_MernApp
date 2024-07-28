@@ -23,7 +23,7 @@ pipeline {
                     echo "Checking out branch: ${BRANCH_NAME}"
                     checkout([$class: 'GitSCM', 
                               branches: [[name: "*/${BRANCH_NAME}"]],
-                              credentialsId: 'git-credentials', 
+                              // credentialsId: 'git-credentials', 
                               // doGenerateSubmoduleConfigurations: false,
                               // extensions: [],
                               userRemoteConfigs: [[url: 'https://github.com/MellouliiAhmed/SocialMedia_MernApp.git']]
