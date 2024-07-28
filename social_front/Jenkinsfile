@@ -180,23 +180,33 @@
 // }
 
 
-pipeline {
-    agent any
-    stages {
-        stage('Load Central Pipeline') {
-            steps {
-                script {
-                    sh "set -o xtrace"
+// pipeline {
+//     agent any
+//     stages {
+//         stage('Load Central Pipeline') {
+//             steps {
+//                 script {
+//                     sh "set -o xtrace"
 
-                    checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/MellouliiAhmed/Jenkins_Central.git']]])
+//                     checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/MellouliiAhmed/Jenkins_Central.git']]])
 
-                    // Load and execute the Jenkinsfile from Repository A
-                    def centralJenkinsfile = load 'Jenkins-Social-Frontend'
+//                     // Load and execute the Jenkinsfile from Repository A
+//                     def centralJenkinsfile = load 'Jenkins-Social-Frontend'
 
-                    // Call the loaded Jenkinsfile
-                    centralJenkinsfile()
-                }
-            }
-        }
-    }
+//                     // Call the loaded Jenkinsfile
+//                     centralJenkinsfile()
+//                 }
+//             }
+//         }
+//     }
+// }
+node {
+    // Checkout Repository A
+    checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/MellouliiAhmed/Jenkins_Central.git']]])
+
+    // Load and execute the Jenkinsfile from Repository A
+    def centralJenkinsfile = load 'Jenkins-Social-Frontend'
+
+    // Execute the pipeline
+    centralJenkinsfile()
 }
