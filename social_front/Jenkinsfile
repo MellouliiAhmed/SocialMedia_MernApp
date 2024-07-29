@@ -1,39 +1,39 @@
-// node {
-//     // Checkout Repository A
-//     checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/MellouliiAhmed/Jenkins_Central.git']]])
+node {
+    // Checkout Repository A
+    checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/MellouliiAhmed/Jenkins_Central.git']]])
 
-//     // Load and execute the Jenkinsfile from Repository A
-//     def centralJenkinsfile = load 'Jenkins-Social-Frontend'
+    // Load and execute the Jenkinsfile from Repository A
+    def centralJenkinsfile = load 'Jenkins-Social-Frontend'
 
-//     // Execute the pipeline
-//     centralJenkinsfile()
-// }
-
-pipeline {
-    agent any 
-
-    stages {
-        stage('Checkout Repository A') {
-            steps {
-                script {
-                    // Checkout Repository A
-                    checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/MellouliiAhmed/Jenkins_Central.git']]])
-                }
-            }
-        }
-        stage('Load and Execute Jenkinsfile') {
-            steps {
-                script {
-                    // Load and execute the Jenkinsfile from Repository A
-                    def centralJenkinsfile = load 'Jenkins-Social-Frontend'
-
-                    // Execute the pipeline
-                    centralJenkinsfile()
-                }
-            }
-        }
-    }
+    // Execute the pipeline
+    centralJenkinsfile()
 }
+
+// pipeline {
+//     agent any 
+
+//     stages {
+//         stage('Checkout Repository A') {
+//             steps {
+//                 script {
+//                     // Checkout Repository A
+//                     checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/MellouliiAhmed/Jenkins_Central.git']]])
+//                 }
+//             }
+//         }
+//         stage('Load and Execute Jenkinsfile') {
+//             steps {
+//                 script {
+//                     // Load and execute the Jenkinsfile from Repository A
+//                     def centralJenkinsfile = load 'Jenkins-Social-Frontend'
+
+//                     // Execute the pipeline
+//                     centralJenkinsfile()
+//                 }
+//             }
+//         }
+//     }
+// }
 
 
 /// test
