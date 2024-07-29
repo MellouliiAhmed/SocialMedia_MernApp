@@ -93,7 +93,7 @@ pipeline {
                 }
             }
         }
-        stage('Push Frontend image to staging/production ? ') {
+        stage('Push Backtend image to staging/production ? ') {
             steps {
                 script {
                     def branchName = env.GIT_BRANCH.replaceFirst('^origin/', '')
