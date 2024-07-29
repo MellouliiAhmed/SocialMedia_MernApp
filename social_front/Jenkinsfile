@@ -100,60 +100,87 @@ pipeline {
                 }
             }
         }
-        stage('Push Frontend image to staging ') {
+        stage('Push Frontend image to staging/production ? ') {
             steps {
                 script {
-                    try {
-                        timeout(time: 1, unit: 'HOURS') {
-                            input message: 'Do you want to deploy to staging?', ok: 'Deploy'
-                            def env = 'stg'
-                            def project = 'cloverfield-frontend'
-                            def app = 'mellouliiahmed/cloverfield-frontend'
-                            def version = IMAGE_TAG
-                            build job: 'pushops-pipeline', parameters: [
-                                string(name: 'environment', value: env),
-                                string(name: 'project', value: project),
-                                string(name: 'app', value: app),
-                                string(name: 'version', value: version)
-                            ]
+                    def branchName = env.GIT_BRANCH.replaceFirst('^origin/', '')
+                    echo "The branch that triggered this build is: ${branchName}"
+                    if ( branchName == 'staging') {
+                        try {
+                            timeout(time: 1, unit: 'HOURS') {
+                                input message: 'Do you want to deploy to staging?', ok: 'Deploy'
+                                def env = 'stg'
+                                def project = 'cloverfield-frontend'
+                                def app = 'mellouliiahmed/cloverfield-frontend'
+                                def version = IMAGE_TAG
+                                build job: 'pushops-pipeline', parameters: [
+                                    string(name: 'environment', value: env),
+                                    string(name: 'project', value: project),
+                                    string(name: 'app', value: app),
+                                    string(name: 'version', value: version)
+                                ]
+                            }
+                            echo "Deploying to Staging"
+                        } catch (Exception e) {
+                            echo 'Deployment was not approved or timed out.'
+                            currentBuild.result = 'ABORTED'
+                            error 'Stopping the pipeline as manual approval was not provided.'
                         }
-                    } catch (Exception e) {
-                        echo 'Deployment was not approved or timed out.'
-                        currentBuild.result = 'ABORTED'
-                        error 'Stopping the pipeline as manual approval was not provided.'
+                    } else if (branchName == 'production') {
+                        try {
+                            timeout(time: 1, unit: 'HOURS') {
+                                input message: 'Do you want to deploy to production?', ok: 'Deploy'
+                                def env = 'prd'
+                                def project = 'cloverfield-frontend'
+                                def app = 'mellouliiahmed/cloverfield-frontend'
+                                def version = IMAGE_TAG
+                                build job: 'pushops-pipeline', parameters: [
+                                    string(name: 'environment', value: env),
+                                    string(name: 'project', value: project),
+                                    string(name: 'app', value: app),
+                                    string(name: 'version', value: version)
+                                ]
+                            }
+                            echo "Deploying to production"
+                        } catch (Exception e) {
+                            echo 'Deployment was not approved or timed out.'
+                            currentBuild.result = 'ABORTED'
+                            error 'Stopping the pipeline as manual approval was not provided.'
+                        }
                     }
+       
                 }
-                echo "Deploying to Staging"
+                
             }
         }
 
        
-        stage('Push Frontend image to production ') {
-            steps {
-                script {
-                    try {
-                        timeout(time: 1, unit: 'HOURS') {
-                            input message: 'Do you want to deploy to production?', ok: 'Deploy'
-                            def env = 'prd'
-                            def project = 'cloverfield-frontend'
-                            def app = 'mellouliiahmed/cloverfield-frontend'
-                            def version = IMAGE_TAG
-                            build job: 'pushops-pipeline', parameters: [
-                                string(name: 'environment', value: env),
-                                string(name: 'project', value: project),
-                                string(name: 'app', value: app),
-                                string(name: 'version', value: version)
-                            ]
-                        }
-                    } catch (Exception e) {
-                        echo 'Deployment was not approved or timed out.'
-                        currentBuild.result = 'ABORTED'
-                        error 'Stopping the pipeline as manual approval was not provided.'
-                    }
-                }
-                echo "Deploying to production"
-            }
-        }
+        // stage('Push Frontend image to production ?') {
+        //     steps {
+        //         script {
+        //             try {
+        //                 timeout(time: 1, unit: 'HOURS') {
+        //                     input message: 'Do you want to deploy to production?', ok: 'Deploy'
+        //                     def env = 'prd'
+        //                     def project = 'cloverfield-frontend'
+        //                     def app = 'mellouliiahmed/cloverfield-frontend'
+        //                     def version = IMAGE_TAG
+        //                     build job: 'pushops-pipeline', parameters: [
+        //                         string(name: 'environment', value: env),
+        //                         string(name: 'project', value: project),
+        //                         string(name: 'app', value: app),
+        //                         string(name: 'version', value: version)
+        //                     ]
+        //                 }
+        //             } catch (Exception e) {
+        //                 echo 'Deployment was not approved or timed out.'
+        //                 currentBuild.result = 'ABORTED'
+        //                 error 'Stopping the pipeline as manual approval was not provided.'
+        //             }
+        //         }
+        //         echo "Deploying to production"
+        //     }
+        // }
         
     }
     post {
