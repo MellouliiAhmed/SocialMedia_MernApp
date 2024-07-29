@@ -9,12 +9,7 @@ pipeline {
         IMAGE_TAG = "1.0"
         // BRANCH_NAME = "${env.BRANCH_NAME}"
     }
-
-
-
-
-    
-    
+  
     stages {
         stage('Checkout') {
             steps {
