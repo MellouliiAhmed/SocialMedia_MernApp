@@ -10,12 +10,6 @@ node {
 }
 
 
-
-
-
-
-
-
 // pipeline {
 //     agent any 
 
