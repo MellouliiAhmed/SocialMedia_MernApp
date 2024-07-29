@@ -173,6 +173,7 @@
 // }
 
 
+
 node {
     // Checkout Repository A
     checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/MellouliiAhmed/Jenkins_Central.git']]])
