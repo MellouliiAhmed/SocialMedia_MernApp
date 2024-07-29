@@ -8,6 +8,7 @@ pipeline {
         CACHE_DIR = "${env.WORKSPACE}/.npm"
         IMAGE_TAG = "1.0"
     }
+
     
     stages {
         stage('Checkout') {
