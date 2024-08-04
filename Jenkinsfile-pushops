@@ -1,0 +1,53 @@
+pipeline {
+    agent any
+    
+    parameters {
+        string(name: 'environment', defaultValue: 'stg', description: 'deployment environment')
+        string(name: 'project', defaultValue: 'cloverfield-frontend', description: 'project name')
+        string(name: 'app', defaultValue: 'mellouliiahmed/cloverfield-frontend', description: 'app name')
+        string(name: 'version', defaultValue: 'v1.0', description: 'app version')
+    }
+    
+    stages {
+        stage('Clone Repository') {
+            steps {
+                
+                git branch: 'master', 
+                    url: 'https://github.com/MellouliiAhmed/SocialMedia_MernApp-Ops.git'
+                script {
+                        sh "echo 'child repo'"
+                        sh "pwd"
+      
+                }
+            }
+        }
+
+        stage('Make Changes') {
+            steps {
+                script {
+                        quoted_version="\"${version}\""
+                        sh "sed -i '/newTag:/s/: .*/: ${quoted_version}/' overlays/${environment}/${project}/kustomization.yaml"
+ 
+                }
+            }
+        }
+
+        stage('Commit and Push') {
+            steps {
+                script {
+                    
+                        // Commit and push changes
+                        sh '''
+                        git config user.email "jenkins@bot.com"
+                        git config user.name "Jenkins Server"
+                        git add .
+                        git remote set-url origin https://jenkins:<token for jenkins>@github.com/MellouliiAhmed/SocialMedia_MernApp-Ops.git 
+                        git commit -m "Change image version"
+                        git push origin master
+                        '''
+                }
+            }
+        }
+    }
+}
+
