@@ -1,23 +1,17 @@
 pipeline {
     agent any
     tools {
-        nodejs "NODEJS_HOME"  // Assurez-vous que Node.js est configuré dans Jenkins
+        nodejs "NODEJS_HOME"  
     }
     environment {
-        // Définir les variables d'environnement nécessaires
         CACHE_DIR = "${env.WORKSPACE}/.npm"
         IMAGE_TAG = "1.0"
     }
 
-    // tst
-    
     stages {
         stage('Checkout') {
             steps {
                 // Checkout du code source
-                // git branch: 'master', 
-                //     credentialsId: 'git-credentials',   
-                //     url: 'https://github.com/MellouliiAhmed/SocialMedia_MernApp.git'
                 script {
                     sh "set -o xtrace"
                     def branchName = env.GIT_BRANCH.replaceFirst('^origin/', '')
@@ -41,13 +35,9 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Naviguer dans le répertoire frontend
                     dir('social_back/backend/') {
-                        // Créer le répertoire de cache si inexistant
                         sh 'mkdir -p $CACHE_DIR'
-                        // Configurer npm pour utiliser le répertoire de cache
                         sh 'npm config set cache $CACHE_DIR --global'
-                        // Installation des dépendances avec gestion du cache
                         sh 'npm ci --force'
                     }
                 }
@@ -56,9 +46,7 @@ pipeline {
         stage('Test Backend') {
             steps {
                 script {
-                    // Naviguer dans le répertoire frontend et construire le projet
                     dir('social_back/backend/') {
-                        // sh 'npm run Test'
                         sh 'echo "test the code"'
                     }
                 }
@@ -70,10 +58,7 @@ pipeline {
                 script {
                     IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
                     echo "${IMAGE_TAG}"
-                    // Naviguer dans le répertoire frontend et construire le projet
                     dir('social_back/backend/') {
-                        // sh 'npm run Test'
-                        // def imageTag="1.0"
                         sh "docker image build -t mellouliiahmed/cloverfield-backend:${IMAGE_TAG} ."
                         sh "docker images"
                     }
@@ -148,101 +133,25 @@ pipeline {
                 
             }
         }
-        // stage('Push Backend image to staging ') {
-        //     steps {
-        //         script {
-        //             try {
-        //                 timeout(time: 1, unit: 'HOURS') {
-        //                     input message: 'Do you want to deploy to staging?', ok: 'Deploy'
-        //                     def env = 'stg'
-        //                     def project = 'cloverfield-backend'
-        //                     def app = 'mellouliiahmed/cloverfield-backend'
-        //                     def version = IMAGE_TAG
-        //                     build job: 'pushops-pipeline', parameters: [
-        //                         string(name: 'environment', value: env),
-        //                         string(name: 'project', value: project),
-        //                         string(name: 'app', value: app),
-        //                         string(name: 'version', value: version)
-        //                     ]
-        //                 }
-        //             } catch (Exception e) {
-        //                 echo 'Deployment was not approved or timed out.'
-        //                 currentBuild.result = 'ABORTED'
-        //                 error 'Stopping the pipeline as manual approval was not provided.'
-        //             }
-        //         }
-        //         echo "Deploying to Staging"
-        //     }
-        // }
-
-       
-        // stage('Push Backend image to production ') {
-        //     steps {
-        //         script {
-        //             try {
-        //                 timeout(time: 1, unit: 'HOURS') {
-        //                     input message: 'Do you want to deploy to production?', ok: 'Deploy'
-        //                     def env = 'prd'
-        //                     def project = 'cloverfield-backend'
-        //                     def app = 'mellouliiahmed/cloverfield-backend'
-        //                     def version = IMAGE_TAG
-        //                     build job: 'pushops-pipeline', parameters: [
-        //                         string(name: 'environment', value: env),
-        //                         string(name: 'project', value: project),
-        //                         string(name: 'app', value: app),
-        //                         string(name: 'version', value: version)
-        //                     ]
-        //                 }
-        //             } catch (Exception e) {
-        //                 echo 'Deployment was not approved or timed out.'
-        //                 currentBuild.result = 'ABORTED'
-        //                 error 'Stopping the pipeline as manual approval was not provided.'
-        //             }
-        //         }
-        //         echo "Deploying to production"
-        //     }
-        // }
         
+      
     }
     post {
         always {
-            // Actions à effectuer après toutes les étapes, succès ou échec
             script {
                 IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
                 dir('social_back/backend/') {
                     sh "docker rmi -f mellouliiahmed/cloverfield-backend:${IMAGE_TAG}"
-                    // Exemple : nettoyer les fichiers temporaires ou d'autres actions post-build
                     sh 'rm -rf node_modules'
                 }
             }
         }
         success {
-            // Actions à effectuer uniquement en cas de succès
             echo 'Build réussi!'
         }
         failure {
-            // Actions à effectuer uniquement en cas d'échec
             echo 'Build échoué.'
         }
     }
 }
-
-// test2
-
-// node {
-//     // Checkout Repository A
-//     checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/MellouliiAhmed/Jenkins_Central.git']]])
-
-//     // Load and execute the Jenkinsfile from Repository A
-//     def centralJenkinsfile = load 'Jenkins-Social-Backend'
-
-//     // Execute the pipeline
-//     centralJenkinsfile()
-// }
-
-
-
-
-
-
 
